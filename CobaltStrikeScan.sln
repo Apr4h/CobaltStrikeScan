@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleUI", "..\..\..\Deskt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetInjectedThreads", "..\..\..\Desktop\GetInjectedThreads\GetInjectedThreads.csproj", "{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CobaltStrikeConfigParser", "..\CobaltStrikeConfigParser\CobaltStrikeConfigParser.csproj", "{189B01BE-F7AA-4EAD-AA5F-507DD78272FE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CobaltStrikeConfigParser", "CobaltStrikeConfigParser\CobaltStrikeConfigParser.csproj", "{189B01BE-F7AA-4EAD-AA5F-507DD78272FE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
