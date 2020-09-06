@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29201.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleUI", "..\..\..\Desktop\ConsoleUI\ConsoleUI.csproj", "{936E4B76-CA9D-4C78-871E-76F6BE251F22}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleUI", "ConsoleUI\ConsoleUI.csproj", "{936E4B76-CA9D-4C78-871E-76F6BE251F22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetInjectedThreads", "..\..\..\Desktop\GetInjectedThreads\GetInjectedThreads.csproj", "{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CobaltStrikeConfigParser", "CobaltStrikeConfigParser\CobaltStrikeConfigParser.csproj", "{189B01BE-F7AA-4EAD-AA5F-507DD78272FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CobaltStrikeConfigParser", "..\CobaltStrikeConfigParser\CobaltStrikeConfigParser.csproj", "{189B01BE-F7AA-4EAD-AA5F-507DD78272FE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetInjectedThreads", "GetInjectedThreads\GetInjectedThreads.csproj", "{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,18 +31,6 @@ Global
 		{936E4B76-CA9D-4C78-871E-76F6BE251F22}.Release|x64.Build.0 = Release|x64
 		{936E4B76-CA9D-4C78-871E-76F6BE251F22}.Release|x86.ActiveCfg = Release|Any CPU
 		{936E4B76-CA9D-4C78-871E-76F6BE251F22}.Release|x86.Build.0 = Release|Any CPU
-		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Debug|x64.ActiveCfg = Debug|x64
-		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Debug|x64.Build.0 = Debug|x64
-		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Debug|x86.ActiveCfg = Debug|x86
-		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Debug|x86.Build.0 = Debug|x86
-		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Release|x64.ActiveCfg = Release|x64
-		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Release|x64.Build.0 = Release|x64
-		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Release|x86.ActiveCfg = Release|x86
-		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Release|x86.Build.0 = Release|x86
 		{189B01BE-F7AA-4EAD-AA5F-507DD78272FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{189B01BE-F7AA-4EAD-AA5F-507DD78272FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{189B01BE-F7AA-4EAD-AA5F-507DD78272FE}.Debug|x64.ActiveCfg = Debug|x64
@@ -55,6 +43,18 @@ Global
 		{189B01BE-F7AA-4EAD-AA5F-507DD78272FE}.Release|x64.Build.0 = Release|x64
 		{189B01BE-F7AA-4EAD-AA5F-507DD78272FE}.Release|x86.ActiveCfg = Release|Any CPU
 		{189B01BE-F7AA-4EAD-AA5F-507DD78272FE}.Release|x86.Build.0 = Release|Any CPU
+		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Debug|x64.ActiveCfg = Debug|x64
+		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Debug|x64.Build.0 = Debug|x64
+		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Debug|x86.ActiveCfg = Debug|x86
+		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Debug|x86.Build.0 = Debug|x86
+		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Release|x64.ActiveCfg = Release|x64
+		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Release|x64.Build.0 = Release|x64
+		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Release|x86.ActiveCfg = Release|x86
+		{B8A0CAB9-6BCC-4814-8664-BAA6462B7DE1}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

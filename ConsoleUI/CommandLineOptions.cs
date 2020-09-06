@@ -21,8 +21,9 @@ namespace ConsoleUI
         [Option('v', "verbose", HelpText = "Write verbose output")]
         public bool Verbose { get; set; }
 
-        [Option("help", HelpText = "Display Help Message")]
+        [Option('h', "help", HelpText = "Display Help Message")]
         public bool Help { get; set; }
+
 
         public CommandLineOptions()
         {
@@ -35,7 +36,7 @@ namespace ConsoleUI
 
         public bool CheckIfNoArgs()
         {
-            if ((Processes.Equals(false)) && (File.Equals(false)) && (InjectedThreads.Equals(false)) && (Help.Equals(false)))
+            if (Processes.Equals(false) && File.Equals(false) && InjectedThreads.Equals(false) && Help.Equals(false))
             {
                 return true;
             }

@@ -1,6 +1,7 @@
 ﻿using CobaltStrikeConfigParser;
 using GetInjectedThreads;
 using CommandLine;
+using CommandLine.Text;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -13,14 +14,16 @@ namespace ConsoleUI
         {
             //Parse command line arguments
             CommandLineOptions opts = new CommandLineOptions();
-            var parser = new Parser(with => with.HelpWriter = null);
-            var result = parser.ParseArguments<CommandLineOptions>(args).WithParsed(parsed => opts = parsed);
-            parser.Dispose();
+            var result = Parser.Default.ParseArguments<CommandLineOptions>(args).WithParsed(parsed => opts = parsed);
+            var title = new HeadingInfo("CobaltStrikeScan");
+
 
             // Option Processes -p
             if (opts.Processes)
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("Scanning processes for injected threads");
+                Console.ResetColor();
 
                 List<InjectedThread> injectedThreads = GetInjectedThreads.GetInjectedThreads.InjectedThreads();
 
@@ -85,7 +88,9 @@ namespace ConsoleUI
             }
             else if (opts.InjectedThreads)
             {
-                Console.WriteLine("Scanning processes for injected threads");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("Scanning processes for injected threads\n");
+                Console.ResetColor();
 
                 List<InjectedThread> injectedThreads = GetInjectedThreads.GetInjectedThreads.InjectedThreads();
 
@@ -102,10 +107,16 @@ namespace ConsoleUI
                     }
                 }
             }
+            else if (opts.Help)
+            {
+                Console.WriteLine(HelpText.AutoBuild(result, h => h, e => e)); 
+            }
         }
 
         private static void OutputInjectedThreadToConsole(InjectedThread injectedThread, bool verbose)
         {
+            string format = "{0,-32} : {1}";
+
             if (verbose)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -116,11 +127,12 @@ namespace ConsoleUI
             else
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Found injected thread\n" +
-                    $"\tProcess:\t{injectedThread.ProcessName}\n" +
-                    $"\tPID:\t\t{injectedThread.ProcessID}\n" +
-                    $"\tTID:\t\t{injectedThread.ThreadId}");
+                Console.WriteLine($"Found injected thread");
                 Console.ResetColor();
+                Console.WriteLine(format, "Process", injectedThread.ProcessName);
+                Console.WriteLine(format, "Process ID", injectedThread.ProcessID);
+                Console.WriteLine(format, "Thread ID", injectedThread.ThreadId);
+                Console.WriteLine();
             }
         }
 

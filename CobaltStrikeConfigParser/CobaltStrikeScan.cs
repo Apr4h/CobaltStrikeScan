@@ -103,13 +103,13 @@ namespace GetInjectedThreads
                         if (result.MatchingRule.Identifier.Contains("CobaltStrike"))
                         {
                             // Get Version 3 match - find the first occurrence of the config string
-                            if (result.Matches[v3].Count > 0)
+                            if (result.Matches.ContainsKey(v3))
                             {
                                 beaconScanMatches.Add(v3, result.Matches[v3][0].Offset);
                             }
 
                             // Get Version 4 match
-                            if (result.Matches[v4].Count > 0)
+                            if (result.Matches.ContainsKey(v4))
                             {
                                 beaconScanMatches.Add(v4, result.Matches[v4][0].Offset);
                             }

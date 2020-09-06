@@ -12,6 +12,7 @@
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
     <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -24,7 +25,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -90,16 +90,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\source\repos\CobaltStrikeConfigParser\CobaltStrikeConfigParser.csproj">
-      <Project>{189b01be-f7aa-4ead-aa5f-507dd78272fe}</Project>
-      <Name>CobaltStrikeConfigParser</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GetInjectedThreads\GetInjectedThreads.csproj">
-      <Project>{b8a0cab9-6bcc-4814-8664-baa6462b7de1}</Project>
-      <Name>GetInjectedThreads</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
@@ -115,5 +105,19 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CobaltStrikeConfigParser\CobaltStrikeConfigParser.csproj">
+      <Project>{189b01be-f7aa-4ead-aa5f-507dd78272fe}</Project>
+      <Name>CobaltStrikeConfigParser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GetInjectedThreads\GetInjectedThreads.csproj">
+      <Project>{b8a0cab9-6bcc-4814-8664-baa6462b7de1}</Project>
+      <Name>GetInjectedThreads</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>
