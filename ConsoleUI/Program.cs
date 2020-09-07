@@ -111,6 +111,11 @@ namespace ConsoleUI
             {
                 Console.WriteLine(HelpText.AutoBuild(result, h => h, e => e)); 
             }
+            else
+            {
+                Console.WriteLine(HelpText.AutoBuild(result, h => h, e => e));
+
+            }
         }
 
         private static void OutputInjectedThreadToConsole(InjectedThread injectedThread, bool verbose)
