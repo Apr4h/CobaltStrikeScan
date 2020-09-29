@@ -1,0 +1,3 @@
+[submodule "GetInjectedThreads"]
+	path = GetInjectedThreads
+	url = https://github.com/Apr4h/GetInjectedThreads.git
