@@ -7,6 +7,9 @@ Alternatively, CobaltStrikeScan can perform the same YARA scan on a file supplie
 
 If a Cobalt Strike beacon is detected in the file or process, the beacon's configuration will be parsed and displayed to the console.
 
+## Cloning this repo
+CobaltStrikeScan contains [GetInjectedThreads](https://github.com/Apr4h/GetInjectedThreads) as a submodule. Ensure you use `git clone --recursive https://github.com/Apr4h/CobaltStrikeScan.git` when cloning CobaltStrikeScan to ensure that the submodule's code is also downloaded/cloned.
+
 ## Acknowledgements
 This project is inspired by the following research / articles:
 - [SpecterOps - Defenders Think in Graphs Too](https://posts.specterops.io/defenders-think-in-graphs-too-part-1-572524c71e91)
