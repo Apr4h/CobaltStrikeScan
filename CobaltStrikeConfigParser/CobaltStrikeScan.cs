@@ -1,4 +1,4 @@
-﻿using GetInjectedThreads.Yara;
+﻿using CobaltStrikeConfigParser.Yara;
 using libyaraNET;
 using System;
 using System.Collections.Generic;

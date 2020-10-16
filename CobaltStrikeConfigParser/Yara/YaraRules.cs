@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GetInjectedThreads.Yara
+namespace CobaltStrikeConfigParser.Yara
 {
     static class YaraRules
     {
