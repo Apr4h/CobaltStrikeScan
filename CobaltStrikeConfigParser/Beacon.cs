@@ -91,7 +91,17 @@ namespace CobaltStrikeConfigParser
             {
                 // Retrieve the 6-byte config field header (TYPE) from the decoded C2 block
                 byte[] configField = new byte[6];
-                Buffer.BlockCopy(configBytes, offset, configField, 0, 6);
+
+                try
+                {
+                    Buffer.BlockCopy(configBytes, offset, configField, 0, 6);
+                }
+                catch (ArgumentException)
+                {
+                    // May incorrectly parse some v4 config fields and try to copy past the length of the buffer. 
+                    // If the end of configBytes has been reached, stop parsing.
+                    break;
+                }
 
                 int dataLength = GetConfigFieldDataLength(configField);
 
@@ -117,7 +127,11 @@ namespace CobaltStrikeConfigParser
                 }
                 catch (KeyNotFoundException)
                 {
-
+                    // Catch undocumented configuration fields or failed attempts to parse some fields incorrectly
+                }
+                catch (ArgumentException)
+                {
+                    // Catch failed attempts to parse some fields incorrectly 
                 }
             }
         }
@@ -173,7 +187,7 @@ namespace CobaltStrikeConfigParser
             foreach(KeyValuePair<int, BeaconSetting> setting in beaconSettings)
             {
                 // Unique formatting for HTTP headers which are lists of strings that can vary in length
-                if (setting.Value.SettingName.Contains("Header"))
+                if (setting.Value.SettingName.Contains("Header") && setting.Value.SettingData.ToString().Length > 0)
                 {
                     List<string> headers = (List<string>)setting.Value.SettingData;
 
