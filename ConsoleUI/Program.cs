@@ -74,9 +74,8 @@ namespace ConsoleUI
                         if (beacon != null)
                         {
                             beacon.OutputToConsole();
-                        }
-                    }
-                    else { Console.WriteLine("Couldn't find CobaltStrike beacon in file"); }
+                        }                    
+		else { Console.WriteLine("Couldn't find CobaltStrike beacon in file (Ensure the file is not a dropper/stager)"); }
                 }
                 else
                 {
