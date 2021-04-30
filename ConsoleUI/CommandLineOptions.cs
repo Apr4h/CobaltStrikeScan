@@ -9,7 +9,7 @@ namespace ConsoleUI
         [Option('d', "dump-processes", HelpText = "Dump process memory to file when injected threads are detected")]
         public bool Dump { get; set; }
 
-        [Option('f', "scan-file", HelpText = "Scan a file/process dump for CobaltStrike beacons")]
+        [Option('f', "scan-file", HelpText = "Scan a file/process dump for CobaltStrike beacons (won't work on stager/dropper executables")]
         public string File { get; set; }
 
         [Option('i', "injected-threads", HelpText = "Scan running (64-bit) processes for injected threads (won't scan for CobaltStrike beacons)")]
