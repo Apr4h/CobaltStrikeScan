@@ -207,7 +207,7 @@ namespace CobaltStrikeConfigParser
                 }
                 else
                 {
-                    Console.WriteLine(format, setting.Value.SettingName, setting.Value.SettingData);
+                    Console.WriteLine(format, setting.Value.SettingName, setting.Value.SettingData.ToString());
                 }
             }
         }

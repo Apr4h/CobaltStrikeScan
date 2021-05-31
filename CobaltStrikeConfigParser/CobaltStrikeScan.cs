@@ -2,23 +2,36 @@
 using libyaraNET;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 
-namespace GetInjectedThreads
+namespace CobaltStrikeConfigParser
 {
     public static class CobaltStrikeScan
     {
         public static string v3 = "$config_v3";
         public static string v4 = "$config_v4";
 
+        public class BeaconMatch
+        {
+            public string Version { get; set; }
+            public ulong Offset { get; set; }
+
+            public BeaconMatch(string version, ulong offset)
+            {
+                Version = version;
+                Offset = offset;
+            }
+        }
+
         /// <summary>
         /// Perform YARA scan on process memory to detect meterpreter or Cobalt Strike payloads.
         /// </summary>
         /// <param name="processBytes">Byte array of target process to be scanned</param>
-        public static Dictionary<string, ulong> YaraScanBytes(byte[] processBytes)
+        public static List<BeaconMatch> YaraScanBytes(byte[] processBytes)
         {
-            Dictionary<string, ulong> beaconScanMatches = new Dictionary<string, ulong>();
+            List<BeaconMatch> beaconScanMatches = new List<BeaconMatch>();
 
             using (var ctx = new YaraContext())
             {
@@ -51,13 +64,13 @@ namespace GetInjectedThreads
                             // Get Version 3 match - find the first occurrence of the config string
                             if (result.Matches.ContainsKey(v3))
                             {
-                                beaconScanMatches.Add(v3, result.Matches[v3][0].Offset);
+                                beaconScanMatches.Add(new BeaconMatch(v3, result.Matches[v3][0].Offset));
                             }
 
                             // Get Version 4 match
                             if (result.Matches.ContainsKey(v4))
                             {
-                                beaconScanMatches.Add(v4, result.Matches[v4][0].Offset);
+                                beaconScanMatches.Add(new BeaconMatch(v4, result.Matches[v4][0].Offset));
                             }
                         }
                     }
@@ -70,10 +83,10 @@ namespace GetInjectedThreads
             }
         }
 
-        public static Dictionary<string, ulong> YaraScanFile(string fileName)
+        public static List<BeaconMatch> YaraScanFile(string fileName)
         {
 
-            Dictionary<string, ulong> beaconScanMatches = new Dictionary<string, ulong>();
+            List<BeaconMatch> beaconScanMatches = new List<BeaconMatch>();
 
             using (var ctx = new YaraContext())
             {
@@ -96,7 +109,62 @@ namespace GetInjectedThreads
 
                     // Scanner and ScanResults do not need to be disposed.
                     var scanner = new Scanner();
-                    var results = scanner.ScanFile(fileName, rules);
+
+                    List<ScanResult> results = new List<ScanResult>();
+
+                    // If file size < 500MB, ScanFile() is fine, otherwise, stream the file and use ScanMemory() on file chunks
+                    if (new FileInfo(fileName).Length < 1024 * 1024 * 500)
+                    {
+                       results.AddRange(scanner.ScanFile(fileName, rules));
+                    }
+                    else
+                    {
+                        using (FileStream fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+                        {
+                            // Parse the file in 200MB chunks
+                            int chunkSize = 1024 * 1024 * 200;
+                            byte[] chunk = new byte[chunkSize];
+                            int bytesRead = 0;
+                            long bytesToRead = fileStream.Length;
+
+                            while (bytesToRead != 0)
+                            {
+                                int n = fileStream.Read(chunk, 0, chunkSize);
+
+                                if (n == 0)
+                                {
+                                    break;
+                                }
+
+                                // Yara scan the file chunk and add any results to the list
+                                var scanResults = scanner.ScanMemory(chunk, rules);
+
+                                // Because the file is being scanned in chunks, match offsets are based on the start of the chunk. Need to add
+                                // previous bytes read to the current match offsets
+                                if (scanResults.Count > 0)
+                                {
+                                    foreach (ScanResult result in scanResults)
+                                    {
+                                        if (result.MatchingRule.Identifier.Contains("CobaltStrike"))
+                                        {
+                                            if (result.Matches.ContainsKey(v3))
+                                            {
+                                                result.Matches[v3][0].Offset += (ulong)bytesRead;
+                                            }
+                                            else if (result.Matches.ContainsKey(v4))
+                                            {
+                                                result.Matches[v4][0].Offset += (ulong)bytesRead;
+                                            }
+                                        }
+                                        results.Add(result);
+                                    }
+                                }
+
+                                bytesRead += n;
+                                bytesToRead -= n;
+                            }
+                        }
+                    }
 
                     foreach (ScanResult result in results)
                     {
@@ -105,13 +173,13 @@ namespace GetInjectedThreads
                             // Get Version 3 match - find the first occurrence of the config string
                             if (result.Matches.ContainsKey(v3))
                             {
-                                beaconScanMatches.Add(v3, result.Matches[v3][0].Offset);
+                                beaconScanMatches.Add(new BeaconMatch(v3, result.Matches[v3][0].Offset));
                             }
 
                             // Get Version 4 match
                             if (result.Matches.ContainsKey(v4))
                             {
-                                beaconScanMatches.Add(v4, result.Matches[v4][0].Offset);
+                                beaconScanMatches.Add(new BeaconMatch(v4, result.Matches[v4][0].Offset));
                             }
                         }
                     }
@@ -125,7 +193,6 @@ namespace GetInjectedThreads
                 return beaconScanMatches;
             }
         }
-
 
         private static void GetMeterpreterConfig(byte[] processBytes, ulong c2BlockOffset)
         {

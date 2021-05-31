@@ -5,6 +5,7 @@ using CommandLine.Text;
 using System;
 using System.IO;
 using System.Collections.Generic;
+using static CobaltStrikeConfigParser.CobaltStrikeScan;
 
 namespace ConsoleUI
 {
@@ -12,11 +13,12 @@ namespace ConsoleUI
     {
         static void Main(string[] args)
         {
+            List<Beacon> beacons = new List<Beacon>();
+
             //Parse command line arguments
             CommandLineOptions opts = new CommandLineOptions();
             var result = Parser.Default.ParseArguments<CommandLineOptions>(args).WithParsed(parsed => opts = parsed);
             var title = new HeadingInfo("CobaltStrikeScan");
-
 
             // Option Processes -p
             if (opts.Processes)
@@ -44,15 +46,21 @@ namespace ConsoleUI
                     Console.WriteLine("Scanning injected thread for CobaltStrike beacon");
                     Console.ResetColor();
 
-                    Dictionary<string, ulong> beaconMatchOffsets = CobaltStrikeScan.YaraScanBytes(injectedThread.ProcessBytes);
+                    List<BeaconMatch> beaconMatches = CobaltStrikeScan.YaraScanBytes(injectedThread.ProcessBytes);
 
-                    if (beaconMatchOffsets.Count > 0)
+                    if (beaconMatches.Count > 0)
                     {
-                        Beacon beacon = GetBeaconFromYaraScan(beaconMatchOffsets, injectedThread.ProcessBytes);
-
-                        if (beacon != null)
+                        foreach (BeaconMatch match in beaconMatches)
                         {
-                            beacon.OutputToConsole();
+                            beacons.Add(GetBeaconFromYaraScan(match, injectedThread.ProcessBytes));
+                        }
+                        
+                        if (beacons.Count > 0)
+                        {
+                            foreach (Beacon beacon in beacons)
+                            {
+                                beacon.OutputToConsole();
+                            }
                         }
                     }
                     else { Console.WriteLine("Couldn't find CobaltStrike beacon in injected thread"); }
@@ -64,16 +72,41 @@ namespace ConsoleUI
             {
                 if (File.Exists(opts.File))
                 {
-                    Dictionary<string, ulong> beaconMatchOffsets = CobaltStrikeScan.YaraScanFile(opts.File);
-
-                    if (beaconMatchOffsets.Count > 0)
+                    // Check the size of the file. If > 500MB, and notify
+                    var fileSize = new FileInfo(opts.File).Length;
+                    if (fileSize > 524288000)
                     {
-                        byte[] fileBytes = File.ReadAllBytes(opts.File);
-                        Beacon beacon = GetBeaconFromYaraScan(beaconMatchOffsets, fileBytes);
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("File size > 500MB. Scanning may take some time...\n");
+                        Console.ResetColor();
+                    }
 
-                        if (beacon != null)
+                    // Yara scan the file and return any matches
+                    List<BeaconMatch> beaconMatches = CobaltStrikeScan.YaraScanFile(opts.File);
+
+                    // Extract config bytes at each match offset and parse the beacon config from them
+                    if (beaconMatches.Count > 0)
+                    {
+                        foreach (BeaconMatch match in beaconMatches)
                         {
-                            beacon.OutputToConsole();
+                            byte[] beaconConfigBytes = new byte[4096];
+                            // Get a byte array from the offset of the file with beacon matches to avoid cases
+                            // where the file is too big to read in to a File object
+                            using (FileStream fileStream = new FileStream(opts.File, FileMode.Open, FileAccess.Read))
+                            {
+                                fileStream.Seek((long)match.Offset, SeekOrigin.Begin);
+                                fileStream.Read(beaconConfigBytes, 0, 4096);
+                            }
+                            match.Offset = 0;
+                            beacons.Add(GetBeaconFromYaraScan(match, beaconConfigBytes));
+                        }
+
+                        if (beacons.Count > 0)
+                        {
+                            foreach (Beacon beacon in beacons)
+                            {
+                                beacon.OutputToConsole();
+                            }
                         }
                     }
                     else { Console.WriteLine("Couldn't find CobaltStrike beacon in file"); }
@@ -99,7 +132,6 @@ namespace ConsoleUI
                     // Output Thread details to console
                     OutputInjectedThreadToConsole(injectedThread, opts.Verbose);
 
-
                     // Check if option set for dumping process memory
                     if (opts.Dump)
                     {
@@ -114,7 +146,6 @@ namespace ConsoleUI
             else
             {
                 Console.WriteLine(HelpText.AutoBuild(result, h => h, e => e));
-
             }
         }
 
@@ -141,26 +172,18 @@ namespace ConsoleUI
             }
         }
 
-        private static Beacon GetBeaconFromYaraScan(Dictionary<string, ulong> beaconMatchOffsets, byte[] bytes)
-        {
-            int version = 0;
-            ulong offset = 0;
+        private static Beacon GetBeaconFromYaraScan(BeaconMatch match, byte[] bytes)
+        { 
+            List<Beacon> beacons = new List<Beacon>();
 
-            if (beaconMatchOffsets.ContainsKey(CobaltStrikeScan.v3))
-            {
-                version = 3;
-                offset = beaconMatchOffsets[CobaltStrikeScan.v3];
-            }
-            else if (beaconMatchOffsets.ContainsKey(CobaltStrikeScan.v4))
-            {
-                version = 4;
-                offset = beaconMatchOffsets[CobaltStrikeScan.v4];
-            }
 
-            if (offset != 0)
+            if (match.Version == v3)
             {
-                Beacon beacon = new Beacon(bytes, offset, version);
-                return beacon;
+                return new Beacon(bytes, match.Offset, 3);
+            }
+            else if (match.Version == v4)
+            {
+                return new Beacon(bytes, match.Offset, 4);
             }
             else
             {
