@@ -187,10 +187,64 @@ namespace CobaltStrikeConfigParser
             return decoded;
         }
 
+        /// <summary>
+        /// Check a beacon's current settings for valid data 
+        /// </summary>
+        /// <returns>Returns true if beacon's data is valid, otherwise returns false</returns>
+        public bool isValidBeacon()
+        {
+            bool isValidBeacon = true;
+            // Check beacon type
+            if (beaconSettings.ContainsKey(1))
+            {
+                BeaconSetting typeSetting = beaconSettings[1];
+                if (!BeaconSetting.beaconType.ContainsValue(typeSetting.SettingData.ToString()))
+                    isValidBeacon = false;
+            }
+            else
+                isValidBeacon = false;
+
+            // Check for valid port range
+            if (beaconSettings.ContainsKey(2))
+            {
+                BeaconSetting portSetting = beaconSettings[2];
+                UInt16 port = 0;
+
+                try 
+                {
+                    // UInt16 holds 0 - 65535 (port range)
+                    port = Convert.ToUInt16(portSetting.SettingData);
+                    if (port < 1024 || port > 49151)
+                    {
+                        isValidBeacon = false;
+                    }
+                }
+                catch (OverflowException)
+                {
+                    // Port setting didn't contain valid data
+                    isValidBeacon = false;
+                }
+            }
+            else
+                isValidBeacon = false;
+
+            // Check for at least 20 settings
+            if (beaconSettings.Count < 20)
+            {
+                isValidBeacon = false;
+            }
+
+            // Check for deprecated fields that shouldn't exist in the config
+            for (int i = 16; i < 19; i++)
+            {
+                if (beaconSettings.ContainsKey(i))
+                    isValidBeacon = false;
+            }
+            return isValidBeacon;
+        }
+
         public void OutputToConsole()
         {
-            Console.WriteLine("CobaltStrike Beacon Configuration:\n");
-
             foreach(KeyValuePair<int, BeaconSetting> setting in beaconSettings)
             {
                 // Unique formatting for HTTP headers which are lists of strings that can vary in length
@@ -217,6 +271,7 @@ namespace CobaltStrikeConfigParser
                     Console.WriteLine(format, setting.Value.SettingName, setting.Value.SettingData.ToString());
                 }
             }
+            Console.WriteLine();
         }
     }
 }

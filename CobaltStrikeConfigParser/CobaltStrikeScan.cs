@@ -90,7 +90,7 @@ namespace CobaltStrikeConfigParser
             }
         }
 
-        public static List<BeaconMatch> YaraScanFile(string fileName)
+        public static List<BeaconMatch> YaraScanFile(string fileName, bool verbose)
         {
 
             List<BeaconMatch> beaconScanMatches = new List<BeaconMatch>();
@@ -119,8 +119,8 @@ namespace CobaltStrikeConfigParser
 
                     List<ScanResult> results = new List<ScanResult>();
 
-                    // If file size < 500MB, ScanFile() is fine, otherwise, stream the file and use ScanMemory() on file chunks
-                    if (new FileInfo(fileName).Length < 1024 * 1024 * 500)
+                    // If file size > 2GB, stream the file and use ScanMemory() on file chunks rather than reading the whole file via 
+                    if (new FileInfo(fileName).Length < Int32.MaxValue)
                     {
                        results.AddRange(scanner.ScanFile(fileName, rules));
                     }
@@ -173,8 +173,14 @@ namespace CobaltStrikeConfigParser
 
                                 bytesRead += n;
                                 bytesToRead -= n;
+                                
+                                // Shitty progress update
+                                if (verbose && bytesRead > 0 && bytesRead <= fileStream.Length)
+                                    Console.Write($"\r\tScanned {bytesRead} bytes of {fileStream.Length} byte file...");
                             }
                         }
+                        if (verbose)
+                            Console.WriteLine($"\r\tFinished scanning file: {fileName}\t\t\t");
                     }
 
                     foreach (ScanResult result in results)
@@ -226,9 +232,6 @@ namespace CobaltStrikeConfigParser
 
         public static Beacon GetBeaconFromYaraScan(BeaconMatch match, byte[] bytes)
         {
-            List<Beacon> beacons = new List<Beacon>();
-
-
             if (match.Version == v3)
             {
                 return new Beacon(bytes, match.Offset, 3);
