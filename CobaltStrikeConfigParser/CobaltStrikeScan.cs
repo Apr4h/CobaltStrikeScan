@@ -12,6 +12,7 @@ namespace CobaltStrikeConfigParser
     {
         public static string v3 = "$config_v3";
         public static string v4 = "$config_v4";
+        public static string decoded = "$config_decoded";
 
         public class BeaconMatch
         {
@@ -71,6 +72,12 @@ namespace CobaltStrikeConfigParser
                             if (result.Matches.ContainsKey(v4))
                             {
                                 beaconScanMatches.Add(new BeaconMatch(v4, result.Matches[v4][0].Offset));
+                            }
+
+                            // Get decoded config match
+                            if (result.Matches.ContainsKey(decoded))
+                            {
+                                beaconScanMatches.Add(new BeaconMatch(decoded, result.Matches[decoded][0].Offset));
                             }
                         }
                     }
@@ -155,8 +162,12 @@ namespace CobaltStrikeConfigParser
                                             {
                                                 result.Matches[v4][0].Offset += (ulong)bytesRead;
                                             }
+                                            else if (result.Matches.ContainsKey(decoded))
+                                            {
+                                                result.Matches[decoded][0].Offset += (ulong)bytesRead;
+                                            }
+                                            results.Add(result);
                                         }
-                                        results.Add(result);
                                     }
                                 }
 
@@ -180,6 +191,12 @@ namespace CobaltStrikeConfigParser
                             if (result.Matches.ContainsKey(v4))
                             {
                                 beaconScanMatches.Add(new BeaconMatch(v4, result.Matches[v4][0].Offset));
+                            }
+
+                            // Get decoded config match
+                            if (result.Matches.ContainsKey(decoded))
+                            {
+                                beaconScanMatches.Add(new BeaconMatch(decoded, result.Matches[decoded][0].Offset));
                             }
                         }
                     }
@@ -205,6 +222,29 @@ namespace CobaltStrikeConfigParser
             // Remove null bytes from unicode strings
             string c2String = Encoding.UTF8.GetString(tmp).Replace("\0", string.Empty);
             Console.WriteLine(c2String);
+        }
+
+        public static Beacon GetBeaconFromYaraScan(BeaconMatch match, byte[] bytes)
+        {
+            List<Beacon> beacons = new List<Beacon>();
+
+
+            if (match.Version == v3)
+            {
+                return new Beacon(bytes, match.Offset, 3);
+            }
+            else if (match.Version == v4)
+            {
+                return new Beacon(bytes, match.Offset, 4);
+            }
+            else if (match.Version == decoded)
+            {
+                return new Beacon(bytes, match.Offset, 0);
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

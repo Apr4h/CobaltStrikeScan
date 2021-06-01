@@ -76,10 +76,17 @@ namespace CobaltStrikeConfigParser
             byte[] configBytes = new byte[cobaltStrikeConfigSize];
             Buffer.BlockCopy(processBytes, ((int)c2BlockOffset), configBytes, 0, cobaltStrikeConfigSize);
 
-            // XOR decode the C2 block
+            // Check if the config section is already decoded
             byte[] decodedConfigBytes = new byte[cobaltStrikeConfigSize];
-            decodedConfigBytes = DecodeConfigBytes(configBytes, version);
-
+            if (version == 0)
+            {
+                decodedConfigBytes = processBytes;
+            }
+            else
+            {
+                // XOR decode the C2 block
+                decodedConfigBytes = DecodeConfigBytes(configBytes, version);
+            }
             ParseTLV(decodedConfigBytes);
         }
 

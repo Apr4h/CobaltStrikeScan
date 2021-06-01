@@ -172,26 +172,5 @@ namespace ConsoleUI
             }
         }
 
-        private static Beacon GetBeaconFromYaraScan(BeaconMatch match, byte[] bytes)
-        { 
-            List<Beacon> beacons = new List<Beacon>();
-
-
-            if (match.Version == v3)
-            {
-                return new Beacon(bytes, match.Offset, 3);
-            }
-            else if (match.Version == v4)
-            {
-                return new Beacon(bytes, match.Offset, 4);
-            }
-            else
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Yara scan found no matches for CobaltStrike payload");
-                Console.ResetColor();
-                return null;
-            }
-        }
     }
 }
