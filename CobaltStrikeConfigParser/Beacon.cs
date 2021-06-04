@@ -8,7 +8,7 @@ namespace CobaltStrikeConfigParser
     {
         private const int cobaltStrikeConfigSize = 0x1000;
         private const string format = "{0,-32} : {1}";
-        private readonly Dictionary<int, BeaconSetting> beaconSettings = new Dictionary<int, BeaconSetting>();
+        public readonly Dictionary<int, BeaconSetting> beaconSettings = new Dictionary<int, BeaconSetting>();
 
         public static readonly Dictionary<int, byte> beaconVersionXorKey = new Dictionary<int, byte>
         {

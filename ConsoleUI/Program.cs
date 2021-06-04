@@ -6,6 +6,10 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using static CobaltStrikeConfigParser.CobaltStrikeScan;
+using System.Diagnostics;
+using System.Security.Principal;
+using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace ConsoleUI
 {
@@ -31,17 +35,19 @@ namespace ConsoleUI
             // Option Processes -p
             if (opts.Processes)
             {
-                GetBeaconsFromInjectedThreads(opts);
+                if (!IsUserAdministrator())
+                {
+                    OutputMessageToConsole(LogLevel.Error, "Not running as Administrator. Admin privileges required for '-p' option\n");
+                    DisplayHelpText(result);
+                }
+                GetBeaconsFromAllProcesses();
             }
-
             // Check if file AND directory options were supplied - display error message and exit
-            if (!string.IsNullOrEmpty(opts.File) && !string.IsNullOrEmpty(opts.Directory))
+            else if (!string.IsNullOrEmpty(opts.File) && !string.IsNullOrEmpty(opts.Directory))
             {
                 OutputMessageToConsole(LogLevel.Error, "Error - Can't supply -f and -d options together.\n");
                 DisplayHelpText(result);
-                Environment.Exit(0);
             }
-
             // User supplied File option -f or Directory option -d
             else if (!string.IsNullOrEmpty(opts.File) || !string.IsNullOrEmpty(opts.Directory))
             {
@@ -54,34 +60,71 @@ namespace ConsoleUI
                 else if (!string.IsNullOrEmpty(opts.Directory))
                 {
                     GetBeaconsFromDirectory(opts.Directory);
-                }
-                
+                }   
             }
             else if (opts.InjectedThreads)
             {
-                OutputMessageToConsole(LogLevel.Info, "Scanning processes for injected threads\n");
-
-                List<InjectedThread> injectedThreads = GetInjectedThreads.GetInjectedThreads.InjectedThreads();
-
-                foreach (InjectedThread injectedThread in injectedThreads)
-                {
-                    // Output Thread details to console
-                    OutputInjectedThreadToConsole(injectedThread, opts.Verbose);
-
-                    // Check if option set for dumping process memory
-                    if (opts.WriteProcessMemory)
-                    {
-                        injectedThread.WriteBytesToFile();
-                    }
-                }
+                GetBeaconsFromInjectedThreads(opts);
             }
             else if (opts.Help)
             {
                 DisplayHelpText(result);
             }
-            else
+        }
+
+        private static void GetBeaconsFromAllProcesses()
+        {
+            List<Beacon> beacons = new List<Beacon>();
+            // foreach process, get process memory bytes
+            foreach (Process process in Process.GetProcesses())
             {
-                DisplayHelpText(result);
+                try
+                {
+                    byte[] processBytes = GetInjectedThreads.GetInjectedThreads.GetProcessMemoryBytes(process.Handle);
+
+                    List<BeaconMatch> beaconMatches = YaraScanBytes(processBytes);
+
+                    if (beaconMatches.Count > 0)
+                    {
+                        foreach (BeaconMatch match in beaconMatches)
+                        {
+                            OutputMessageToConsole(LogLevel.Success, $"Found Cobalt Strike beacon in process: {process.ProcessName} {process.Id}");
+                            beacons.Add(GetBeaconFromYaraScan(match, processBytes));
+
+                            if (opts.WriteProcessMemory)
+                            {
+                                WriteProcessBytesToFile(process, processBytes);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (opts.Verbose)
+                            OutputMessageToConsole(LogLevel.Info, $"Scanned Process: {process.ProcessName} {process.Id} - No Cobalt Strike Beacon found");
+                    }
+                }
+                catch (System.ComponentModel.Win32Exception) { }
+                catch (System.InvalidOperationException) { }
+                // Thrown when GetProcessMemoryBytes tries to read a memory stream that is too large
+                catch (System.IO.IOException) { }
+            }
+
+
+            // Remove duplicate beacon objects to reduce output
+            var uniqueBeacons = new HashSet<Beacon>();
+            foreach (Beacon beacon in beacons)
+            {
+                if (!uniqueBeacons.Contains(beacon))
+                    uniqueBeacons.Add(beacon);
+            }
+
+            foreach (Beacon beacon in uniqueBeacons)
+            {
+                if (beacon.isValidBeacon())
+                {
+                    OutputMessageToConsole(LogLevel.Success, $"Cobalt Strike Beacon Configuration\n");
+                    beacon.OutputToConsole();
+                }
             }
         }
 
@@ -281,6 +324,42 @@ namespace ConsoleUI
             }
             Console.WriteLine(message);
             Console.ResetColor();
+        }
+
+        public static void WriteProcessBytesToFile (Process process, byte[] processBytes)
+        {
+            if (processBytes.Length > 0)
+            {
+                OutputMessageToConsole(LogLevel.Info, $"\tDumping RWX and RW memory for process: {process.ProcessName} {process.Id}");
+
+                string writeTime = DateTime.Now.ToString("yyyyddMM-HHmmss");
+                string fileName = $"{writeTime}-proc{process.Id}.dmp";
+
+                File.WriteAllBytes(fileName, processBytes);
+                OutputMessageToConsole(LogLevel.Success, $"\tWrote process bytes to file: {fileName}");
+            }
+        }
+
+        public static bool IsUserAdministrator()
+        {
+            bool isAdmin;
+            WindowsIdentity user = null;
+            try
+            {
+                user = WindowsIdentity.GetCurrent();
+                WindowsPrincipal principal = new WindowsPrincipal(user);
+                isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+            catch (Exception)
+            {
+                isAdmin = false;
+            }
+            finally
+            {
+                if (user != null)
+                    user.Dispose();
+            }
+            return isAdmin;
         }
 
         private static void DisplayHelpText(ParserResult<CommandLineOptions> result)
