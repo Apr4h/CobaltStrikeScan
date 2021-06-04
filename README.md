@@ -26,21 +26,23 @@ This project is inspired by the following research / articles:
 
 ## Usage
 ```
-  -d, --dump-processes      Dump process memory to file when injected threads are detected
+  -d, --directory-scan          Scan all process/memory dump files in a directory for Cobalt Strike beacons
 
-  -f, --scan-file           Scan a file/process dump for CobaltStrike beacons
+  -f, --scan-file               Scan a process/memory dump for Cobalt Strike beacons
 
-  -i, --injected-threads    Scan running (64-bit) processes for injected threads (won't scan for CobaltStrike beacons)
+  -i, --injected-threads        Scan running (64-bit) processes for injected threads and Cobalt Strike beacons
 
-  -p, --scan-processes      Scan running processes for injected threads and CobaltStrike beacons
+  -p, --scan-processes          Scan running processes for Cobalt Strike beacons
 
-  -v, --verbose             Write verbose output (display detailed information for injected threads)
+  -v, --verbose                 Write verbose output
 
-  -h, --help                Display Help Message
+  -w, --write-process-memory    Write process memory to file when injected threads are detected
 
-  --help                    Display this help screen.
+  -h, --help                    Display Help Message
 
-  --version                 Display version information.
+  --help                        Display this help screen.
+
+  --version                     Display version information.
 ```
 
 ## Example
