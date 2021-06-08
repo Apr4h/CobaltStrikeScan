@@ -40,6 +40,7 @@ namespace ConsoleUI
                     OutputMessageToConsole(LogLevel.Error, "Not running as Administrator. Admin privileges required for '-p' option\n");
                     DisplayHelpText(result);
                 }
+                OutputMessageToConsole(LogLevel.Info, "Scanning processes for Cobalt Strike Beacons...");
                 GetBeaconsFromAllProcesses();
             }
             // Check if file AND directory options were supplied - display error message and exit
@@ -80,6 +81,9 @@ namespace ConsoleUI
             {
                 try
                 {
+                    if (opts.Verbose)
+                        OutputMessageToConsole(LogLevel.Info, $"Scanning Process: {process.ProcessName} {process.Id}");
+
                     byte[] processBytes = GetInjectedThreads.GetInjectedThreads.GetProcessMemoryBytes(process.Handle);
 
                     List<BeaconMatch> beaconMatches = YaraScanBytes(processBytes);
@@ -97,11 +101,6 @@ namespace ConsoleUI
                             }
                         }
                     }
-                    else
-                    {
-                        if (opts.Verbose)
-                            OutputMessageToConsole(LogLevel.Info, $"Scanned Process: {process.ProcessName} {process.Id} - No Cobalt Strike Beacon found");
-                    }
                 }
                 catch (System.ComponentModel.Win32Exception) { }
                 catch (System.InvalidOperationException) { }
@@ -118,14 +117,22 @@ namespace ConsoleUI
                     uniqueBeacons.Add(beacon);
             }
 
-            foreach (Beacon beacon in uniqueBeacons)
+            if (uniqueBeacons.Count > 0)
             {
-                if (beacon.isValidBeacon())
+                foreach (Beacon beacon in uniqueBeacons)
                 {
-                    OutputMessageToConsole(LogLevel.Success, $"Cobalt Strike Beacon Configuration\n");
-                    beacon.OutputToConsole();
+                    if (beacon.isValidBeacon())
+                    {
+                        OutputMessageToConsole(LogLevel.Success, $"Cobalt Strike Beacon Configuration\n");
+                        beacon.OutputToConsole();
+                    }
                 }
             }
+            else
+            {
+                OutputMessageToConsole(LogLevel.Info, "Didn't find Cobalt Strike beacon in processes")
+;            }
+
         }
 
         private static void OutputInjectedThreadToConsole(InjectedThread injectedThread, bool verbose)
