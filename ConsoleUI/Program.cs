@@ -79,6 +79,9 @@ namespace ConsoleUI
             // foreach process, get process memory bytes
             foreach (Process process in Process.GetProcesses())
             {
+                if (process.Id == 4 || process.Id == 0)
+                    continue;
+
                 try
                 {
                     if (opts.Verbose)
@@ -106,6 +109,7 @@ namespace ConsoleUI
                 catch (System.InvalidOperationException) { }
                 // Thrown when GetProcessMemoryBytes tries to read a memory stream that is too large
                 catch (System.IO.IOException) { }
+                catch (OverflowException) { }
             }
 
 

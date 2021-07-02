@@ -125,13 +125,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Costura64\GetInjectedThreads.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Costura64\CommandLine.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Costura64\CobaltStrikeConfigParser.dll" />
+    <EmbeddedResource Include="Costura64\GetInjectedThreads.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Costura64\CobaltStrikeConfigParser.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

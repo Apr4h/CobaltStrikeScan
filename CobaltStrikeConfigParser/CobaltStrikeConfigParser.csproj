@@ -74,7 +74,9 @@
     <Compile Include="Yara\YaraRules.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Costura64\libyara.NET.dll" />
+    <EmbeddedResource Include="Costura64\libyara.NET.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
