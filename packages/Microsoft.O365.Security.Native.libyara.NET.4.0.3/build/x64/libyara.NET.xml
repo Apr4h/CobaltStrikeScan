@@ -1,0 +1,280 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        "libyara.NET"
+    </assembly>
+    <members>
+        <member name="M:libyaraNET.QuickScan.Memory(System.IntPtr,System.Int32,System.String,libyaraNET.ScanFlags)">
+            <summary>
+Scan a memory block with the specified rules file.
+</summary>
+        </member>
+        <member name="M:libyaraNET.QuickScan.Memory(System.IntPtr,System.Int32,System.String)">
+            <summary>
+Scan a memory block with the specified rules file.
+</summary>
+        </member>
+        <member name="M:libyaraNET.QuickScan.Memory(System.Byte[],System.String,libyaraNET.ScanFlags)">
+            <summary>
+Scan a byte array with the specified rules file.
+</summary>
+        </member>
+        <member name="M:libyaraNET.QuickScan.Memory(System.Byte[],System.String)">
+            <summary>
+Scan a byte array with the specified rules file.
+</summary>
+        </member>
+        <member name="M:libyaraNET.QuickScan.File(System.String,System.String,libyaraNET.ScanFlags)">
+            <summary>
+Scan a file with the specified rules file.
+</summary>
+        </member>
+        <member name="M:libyaraNET.QuickScan.File(System.String,System.String)">
+            <summary>
+Scan a file with the specified rules file.
+</summary>
+        </member>
+        <member name="M:libyaraNET.QuickScan.Process(System.Int32,System.String,libyaraNET.ScanFlags)">
+            <summary>
+Scan a process's memory with the specified rules file.
+</summary>
+        </member>
+        <member name="M:libyaraNET.QuickScan.Process(System.Int32,System.String)">
+            <summary>
+Scan a process's memory with the specified rules file.
+</summary>
+        </member>
+        <member name="T:libyaraNET.QuickScan">
+            <summary>
+Helper class that makes scanning easy. All resources
+are properly initialized and free'd after the scan.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Scanner.ScanMemory(System.Byte*,System.Int32,libyaraNET.Rules,libyaraNET.ScanFlags)">
+            <summary>
+Scan a memory block with the specified rules.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Scanner.ScanMemory(System.IntPtr,System.Int32,libyaraNET.Rules,libyaraNET.ScanFlags)">
+            <summary>
+Scan a memory block with the specified rules.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Scanner.ScanMemory(System.IntPtr,System.Int32,libyaraNET.Rules)">
+            <summary>
+Scan a memory block with the specified rules.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Scanner.ScanMemory(System.Byte[],libyaraNET.Rules,libyaraNET.ScanFlags)">
+            <summary>
+Scan a byte array with the specified rules.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Scanner.ScanMemory(System.Byte[],libyaraNET.Rules)">
+            <summary>
+Scan a byte array with the specified rules.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Scanner.ScanProcess(System.Int32,libyaraNET.Rules,libyaraNET.ScanFlags)">
+            <summary>
+Scan a process's memory with the specified rules.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Scanner.ScanProcess(System.Int32,libyaraNET.Rules)">
+            <summary>
+Scan a process's memory with the specified rules.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Scanner.ScanFile(System.String,libyaraNET.Rules,libyaraNET.ScanFlags)">
+            <summary>
+Scan a file with the specified rules.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Scanner.ScanFile(System.String,libyaraNET.Rules)">
+            <summary>
+Scan a file with the specified rules.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Scanner.#ctor">
+            <summary>
+Create a new scanner that can scan processes or files.
+</summary>
+        </member>
+        <member name="T:libyaraNET.Scanner">
+            <summary>
+Wraps the yara scanning functions to scan processes or files.
+This calls to the scanning functions is threadsafe.
+</summary>
+        </member>
+        <member name="M:libyaraNET.ScanResult.#ctor">
+            <summary>
+Create an empty scan result. Useful for testing.
+</summary>
+        </member>
+        <member name="T:libyaraNET.ScanResult">
+            <summary>
+A matching rule and its matches collected during a scan.
+</summary>
+        </member>
+        <member name="M:libyaraNET.GCHandleWrapper.GetPointer">
+            <summary>
+Get the underlying GCHandle as a void*
+</summary>
+        </member>
+        <member name="M:libyaraNET.GCHandleWrapper.GetHandle">
+            <summary>
+Get the underlying GCHandle
+</summary>
+        </member>
+        <member name="M:libyaraNET.GCHandleWrapper.#ctor(System.Object)">
+            <summary>
+Create a GCHandle that points to the specified object.
+</summary>
+        </member>
+        <member name="T:libyaraNET.GCHandleWrapper">
+            <summary>
+RAII wrapper for a GCHandle that frees the handle on scope exit.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Match.AsString">
+            <summary>
+Read Data as a string. This will attempt to read as
+Unicode or ASCII but will not work correctly for binary Data.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Match.#ctor">
+            <summary>
+Create an empty match. Useful for testing.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Compiler.CompileRulesString(System.String)">
+            <summary>
+Get the compiled Rules for the specified yara rules string.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Compiler.CompileRulesFile(System.String)">
+            <summary>
+Get the compiled Rules for the specified yara rules file.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Compiler.GetRules">
+            <summary>
+Get the compiled Rules object.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Compiler.AddRuleString(System.String)">
+            <summary>
+Add rules from a string.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Compiler.AddRuleFile(System.String)">
+            <summary>
+Add rules from plain-text yara rule file.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Compiler.#ctor">
+            <summary>
+Create a new compiler.
+</summary>
+        </member>
+        <member name="T:libyaraNET.Compiler">
+            <summary>
+Compiles yara rule files into Rules for scanning.
+This class is not thread safe and should only be
+called on the main thread.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Rules.GetRules">
+            <summary>
+Split the compiled Rules set(i.e. YR_RULES) to
+get a list of compiled Rule objects(i.e. YR_RULE)
+</summary>
+        </member>
+        <member name="M:libyaraNET.Rules.Release">
+            <summary>
+Release management of the underlying YR_RULES*
+allowing another object to own the resource.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Rules.op_Implicit~YR_RULES*">
+            <summary>
+Allow for implicit cast to a YR_RULES*
+</summary>
+        </member>
+        <member name="M:libyaraNET.Rules.#ctor(YR_RULES*)">
+            <summary>
+Wrap native YR_RULES pointer.
+</summary>
+        </member>
+        <member name="T:libyaraNET.Rules">
+            <summary>
+A container for compiled yara rules.
+</summary>
+        </member>
+        <member name="M:libyaraNET.Rule.#ctor">
+            <summary>
+Create an empty Rule. Useful for testing.
+</summary>
+        </member>
+        <member name="M:libyaraNET.FileWrapper.op_Implicit~_iobuf*">
+            <summary>
+Allow for implicit conversion to FILE*
+</summary>
+        </member>
+        <member name="T:libyaraNET.FileWrapper">
+            <summary>
+RAII wrapper for accessing a FILE*.
+</summary>
+        </member>
+        <member name="T:libyaraNET.file_error">
+            <summary>
+Exception that wraps errors encounted when opening files.
+</summary>
+        </member>
+        <member name="T:libyaraNET.CallbackMessage">
+            <summary>
+Message type sent to callback
+</summary>
+        </member>
+        <member name="T:libyaraNET.ScanFlags">
+            <summary>
+Options flags for scanners.
+</summary>
+        </member>
+        <member name="T:libyaraNET.CallbackResult">
+            <summary>
+Return values for scan callbacks.
+</summary>
+        </member>
+        <member name="T:libyaraNET.YaraContext">
+            <summary>
+RAII wrapper for calls to yr_initialize and yr_finalize.
+In C# use a using statement to ensure yara is properly
+finalized. All yara operations must take place with the
+scope of a YaraContext. One YaraContext object should be
+created per process and it should be created on the main thread.
+</summary>
+        </member>
+        <member name="M:libyaraNET.ErrorUtility.ThrowOnError(System.Int32)">
+            <summary>
+Throw the appropriate exception for the given yara error
+</summary>
+        </member>
+        <member name="T:libyaraNET.ErrorUtility">
+            <summary>
+Error handling utilities
+</summary>
+        </member>
+        <member name="T:libyaraNET.CompilationException">
+            <summary>
+Represents a yara compilation error.
+</summary>
+        </member>
+        <member name="T:libyaraNET.YaraException">
+            <summary>
+A generic yara error.
+See http://yara.readthedocs.io/en/v3.4.0/capi.html
+</summary>
+        </member>
+    </members>
+</doc>
