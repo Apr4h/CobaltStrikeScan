@@ -183,6 +183,5 @@ namespace CobaltStrikeConfigParser
 
             return headers;
         }
-
     }
 }

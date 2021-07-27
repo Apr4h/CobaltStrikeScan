@@ -36,9 +36,9 @@ namespace CobaltStrikeConfigParser
             { 0x0e, new List<string> { "Injection_Process:", "string" }},
             { 0x0f, new List<string> { "PipeName:", "string" }},
             // Options 0x10-0x12 are deprecated in 3.4
-            { 0x10, new List<string> { "Year:", "int" }},
-            { 0x11, new List<string> { "Month:", "int" }},
-            { 0x12, new List<string> { "Day:", "int" }},
+            //{ 0x10, new List<string> { "Year:", "int" }},
+            //{ 0x11, new List<string> { "Month:", "int" }},
+            //{ 0x12, new List<string> { "Day:", "int" }},
             { 0x13, new List<string> { "DNS_idle:", "int" }},
             { 0x14, new List<string> { "DNS_sleep(ms):", "int" }},
             { 0x1a, new List<string> { "HTTP_Method1:", "string" }},
@@ -214,7 +214,7 @@ namespace CobaltStrikeConfigParser
                 {
                     // UInt16 holds 0 - 65535 (port range)
                     port = Convert.ToUInt16(portSetting.SettingData);
-                    if (port < 1024 || port > 49151)
+                    if (port < 1 || port > 65535)
                     {
                         isValidBeacon = false;
                     }
@@ -235,11 +235,13 @@ namespace CobaltStrikeConfigParser
             }
 
             // Check for deprecated fields that shouldn't exist in the config
+            /*
             for (int i = 16; i < 19; i++)
             {
                 if (beaconSettings.ContainsKey(i))
                     isValidBeacon = false;
             }
+            */
             return isValidBeacon;
         }
 

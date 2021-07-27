@@ -8,12 +8,11 @@ namespace CobaltStrikeConfigParser.Yara
         public static string cobaltStrikeRule = "rule CobaltStrike { " +
                 "strings:  " +
                     //"$sprng = { 73 70 72 6E 67 00 } " +
-                    "$eicar = \"EICAR-STANDARD-ANTIVIRUS\" " +
                     "$config_v3 = { 69 68 69 68 69 6b ?? ?? 69 6b 69 68 69 6b ?? ?? 69 6a } " +
                     "$config_v4 = { 2e 2f 2e 2f 2e 2c ?? ?? 2e 2c 2e 2f 2e 2c ?? ?? 2e } " +
                     "$config_decoded = { 00 01 00 01 00 02 ?? ?? 00 02 00 01 00 02 ?? ?? 00 } " +
                 "condition: " +
-                    "$config_v3 or $config_v4 or ($config_decoded and $eicar)" +
+                    "$config_v3 or $config_v4 or $config_decoded" +
             "}";
 
         public static List<string> meterpreterRules = new List<string>(new string[] {
