@@ -42,10 +42,12 @@ namespace CobaltStrikeConfigParser
                     using (Compiler compiler = new Compiler())
                     {
                         // Retrieve YARA rules from YaraRules static class and compile them for scanning
+                        /*
                         foreach (string rule in YaraRules.meterpreterRules)
                         {
                             compiler.AddRuleString(rule);
                         }
+                        */
 
                         compiler.AddRuleString(YaraRules.cobaltStrikeRule);
 
@@ -56,30 +58,7 @@ namespace CobaltStrikeConfigParser
                     Scanner scanner = new Scanner();
                     var results = scanner.ScanMemory(processBytes, rules);
 
-                    // Check for rule matches in process bytes
-                    foreach (ScanResult result in results)
-                    {
-                        if (result.MatchingRule.Identifier.Contains("CobaltStrike"))
-                        {
-                            // Get Version 3 match - find the first occurrence of the config string
-                            if (result.Matches.ContainsKey(v3))
-                            {
-                                beaconScanMatches.Add(new BeaconMatch(v3, result.Matches[v3][0].Offset));
-                            }
-
-                            // Get Version 4 match
-                            if (result.Matches.ContainsKey(v4))
-                            {
-                                beaconScanMatches.Add(new BeaconMatch(v4, result.Matches[v4][0].Offset));
-                            }
-
-                            // Get decoded config match
-                            if (result.Matches.ContainsKey(decoded))
-                            {
-                                beaconScanMatches.Add(new BeaconMatch(decoded, result.Matches[decoded][0].Offset));
-                            }
-                        }
-                    }
+                    beaconScanMatches = ParseScanResults(results);
                 }
                 finally
                 {
@@ -153,17 +132,9 @@ namespace CobaltStrikeConfigParser
                                     {
                                         if (result.MatchingRule.Identifier.Contains("CobaltStrike"))
                                         {
-                                            if (result.Matches.ContainsKey(v3))
+                                            foreach (string key in result.Matches.Keys)
                                             {
-                                                result.Matches[v3][0].Offset += (ulong)bytesRead;
-                                            }
-                                            else if (result.Matches.ContainsKey(v4))
-                                            {
-                                                result.Matches[v4][0].Offset += (ulong)bytesRead;
-                                            }
-                                            else if (result.Matches.ContainsKey(decoded))
-                                            {
-                                                result.Matches[decoded][0].Offset += (ulong)bytesRead;
+                                                result.Matches[key][0].Offset += (ulong)bytesRead;
                                             }
                                             results.Add(result);
                                         }
@@ -182,29 +153,7 @@ namespace CobaltStrikeConfigParser
                             Console.WriteLine($"\r\tFinished scanning file: {fileName}\t\t\t");
                     }
 
-                    foreach (ScanResult result in results)
-                    {
-                        if (result.MatchingRule.Identifier.Contains("CobaltStrike"))
-                        {
-                            // Get Version 3 match - find the first occurrence of the config string
-                            if (result.Matches.ContainsKey(v3))
-                            {
-                                beaconScanMatches.Add(new BeaconMatch(v3, result.Matches[v3][0].Offset));
-                            }
-
-                            // Get Version 4 match
-                            if (result.Matches.ContainsKey(v4))
-                            {
-                                beaconScanMatches.Add(new BeaconMatch(v4, result.Matches[v4][0].Offset));
-                            }
-
-                            // Get decoded config match
-                            if (result.Matches.ContainsKey(decoded))
-                            {
-                                beaconScanMatches.Add(new BeaconMatch(decoded, result.Matches[decoded][0].Offset));
-                            }
-                        }
-                    }
+                    beaconScanMatches = ParseScanResults(results);
                 }
                 finally
                 {
@@ -214,6 +163,25 @@ namespace CobaltStrikeConfigParser
 
                 return beaconScanMatches;
             }
+        }
+
+      
+        private static List<BeaconMatch> ParseScanResults(List<ScanResult> results)
+        {
+            List<BeaconMatch> beaconScanMatches = new List<BeaconMatch>();
+            // Check for rule matches in process bytes
+            foreach (ScanResult result in results)
+            {
+                if (result.MatchingRule.Identifier.Contains("CobaltStrike"))
+                {
+                    foreach (KeyValuePair<string, List<Match>> item in result.Matches)
+                    {
+                        beaconScanMatches.Add(new BeaconMatch(item.Key, item.Value[0].Offset));
+                    }
+                }
+            }
+
+            return beaconScanMatches;
         }
 
         private static void GetMeterpreterConfig(byte[] processBytes, ulong c2BlockOffset)
@@ -227,26 +195,6 @@ namespace CobaltStrikeConfigParser
             // Remove null bytes from unicode strings
             string c2String = Encoding.UTF8.GetString(tmp).Replace("\0", string.Empty);
             Console.WriteLine(c2String);
-        }
-
-        public static Beacon GetBeaconFromYaraScan(BeaconMatch match, byte[] bytes)
-        {
-            if (match.Version == v3)
-            {
-                return new Beacon(bytes, match.Offset, 3);
-            }
-            else if (match.Version == v4)
-            {
-                return new Beacon(bytes, match.Offset, 4);
-            }
-            else if (match.Version == decoded)
-            {
-                return new Beacon(bytes, match.Offset, 0);
-            }
-            else
-            {
-                return null;
-            }
         }
     }
 }

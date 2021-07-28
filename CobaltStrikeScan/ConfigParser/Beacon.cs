@@ -70,7 +70,7 @@ namespace CobaltStrikeConfigParser
             { 0x36, new List<string> { "HostHeader:", "string" }},
         };
 
-        public Beacon(byte[] processBytes, ulong c2BlockOffset, int version)
+        public Beacon(byte[] processBytes, ulong c2BlockOffset, string signatureKey)
         {
             // C2 information starts 42 bytes after beginning of C2 block
             byte[] configBytes = new byte[cobaltStrikeConfigSize];
@@ -78,14 +78,14 @@ namespace CobaltStrikeConfigParser
 
             // Check if the config section is already decoded
             byte[] decodedConfigBytes = new byte[cobaltStrikeConfigSize];
-            if (version == 0)
+            if (signatureKey.Equals("$s000"))
             {
                 decodedConfigBytes = processBytes;
             }
             else
             {
                 // XOR decode the C2 block
-                decodedConfigBytes = DecodeConfigBytes(configBytes, version);
+                decodedConfigBytes = DecodeConfigBytes(configBytes, signatureKey);
             }
             ParseTLV(decodedConfigBytes);
         }
@@ -172,10 +172,13 @@ namespace CobaltStrikeConfigParser
         }
 
 
-        public static byte[] DecodeConfigBytes(byte[] configBytes, int version)
+        public static byte[] DecodeConfigBytes(byte[] configBytes, string version)
         {
-            // Select appropriate XOR key based on detected version
-            byte xorKey = Beacon.beaconVersionXorKey[version];
+            // turn signature string into integer xor key
+            int signatureXorKey;
+            int.TryParse(version.Substring(2), out signatureXorKey);
+            byte[] xorKeyBytes = BitConverter.GetBytes(signatureXorKey);
+            byte xorKey = xorKeyBytes[0];
 
             byte[] decoded = new byte[cobaltStrikeConfigSize];
 

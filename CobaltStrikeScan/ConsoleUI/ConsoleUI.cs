@@ -94,7 +94,7 @@ namespace ConsoleUI
                         foreach (BeaconMatch match in beaconMatches)
                         {
                             OutputMessageToConsole(LogLevel.Success, $"Found Cobalt Strike beacon in process: {process.ProcessName} {process.Id}");
-                            beacons.Add(GetBeaconFromYaraScan(match, processBytes));
+                            beacons.Add(new Beacon(processBytes, match.Offset, match.Version));
 
                             if (opts.WriteProcessMemory)
                             {
@@ -186,7 +186,7 @@ namespace ConsoleUI
                 {
                     foreach (BeaconMatch match in beaconMatches)
                     {
-                        beacons.Add(GetBeaconFromYaraScan(match, injectedThread.ProcessBytes));
+                        beacons.Add(new Beacon(injectedThread.ProcessBytes, match.Offset, match.Version));
                     }
 
                     if (beacons.Count > 0)
@@ -270,7 +270,7 @@ namespace ConsoleUI
                                 fileStream.Read(beaconConfigBytes, 0, 4096);
                             }
                             match.Offset = 0;
-                            beacons.Add(GetBeaconFromYaraScan(match, beaconConfigBytes));
+                            beacons.Add(new Beacon(beaconConfigBytes, match.Offset, match.Version));
                         }
                         catch (System.IO.IOException)
                         {
